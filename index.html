@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Advanced Gmail Trick Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 700px;
+      margin: 30px auto;
+      padding: 20px;
+      background: #f4f4f9;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    input, select, button {
+      padding: 10px;
+      margin: 8px 0;
+      width: 100%;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background: #007bff;
+      color: #fff;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 10px;
+      background: #fff;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .result p {
+      margin: 5px 0;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+  <h2>📧 Advanced Gmail Trick Generator</h2>
+  <form onsubmit="generateEmails(); return false;">
+    <label>Masukkan Email:</label>
+    <input type="email" id="email" placeholder="contoh: namaakun@gmail.com" required>
+    
+    <label>Pilih Metode:</label>
+    <select id="method">
+      <option value="dot">Full Dot Trick (semua kombinasi)</option>
+      <option value="plus">Plus Trick (+alias)</option>
+    </select>
+    
+    <button type="submit">Generate</button>
+    <button type="button" onclick="downloadTxt()">Download TXT</button>
+  </form>
+
+  <div class="result" id="result"></div>
+
+  <script>
+    let generatedEmails = [];
+
+    function generateEmails() {
+      let email = document.getElementById("email").value.trim();
+      let method = document.getElementById("method").value;
+      let resultBox = document.getElementById("result");
+      resultBox.innerHTML = "<h3>Hasil:</h3>";
+      generatedEmails = [];
+
+      if (!email.includes("@gmail.com")) {
+        resultBox.innerHTML += "<p style='color:red'>Email harus Gmail!</p>";
+        return;
+      }
+
+      let [user, domain] = email.split("@");
+
+      if (method === "dot") {
+        generatedEmails = dotVariations(user).map(u => u + "@" + domain);
+      } else if (method === "plus") {
+        for (let i = 1; i <= 50; i++) {
+          generatedEmails.push(user + "+" + i + "@" + domain);
+        }
+      }
+
+      generatedEmails.forEach(e => {
+        resultBox.innerHTML += `<p>${e}</p>`;
+      });
+    }
+
+    // Fungsi untuk generate semua kombinasi titik
+    function dotVariations(str) {
+      let results = [];
+
+      function helper(prefix, rest) {
+        if (rest.length === 0) {
+          results.push(prefix);
+          return;
+        }
+        // tanpa titik
+        helper(prefix + rest[0], rest.slice(1));
+        // dengan titik (jangan di awal/akhir)
+        if (prefix.length > 0 && rest.length > 1) {
+          helper(prefix + "." + rest[0], rest.slice(1));
+        }
+      }
+
+      helper("", str);
+      return results;
+    }
+
+    function downloadTxt() {
+      if (generatedEmails.length === 0) {
+        alert("Belum ada hasil untuk di-download!");
+        return;
+      }
+      let blob = new Blob([generatedEmails.join("\n")], { type: "text/plain" });
+      let link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "emails.txt";
+      link.click();
+    }
+  </script>
+</body>
+</html>
