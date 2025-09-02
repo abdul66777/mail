@@ -81,7 +81,7 @@
       if (method === "dot") {
         generatedEmails = dotVariations(user).map(u => u + "@" + domain);
       } else if (method === "plus") {
-        for (let i = 1; i <= 50; i++) {
+        for (let i = 1; i <= 1000; i++) {
           generatedEmails.push(user + "+" + i + "@" + domain);
         }
       }
